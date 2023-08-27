@@ -5,45 +5,68 @@
 Here is the bash code for my console prompt. Copy/paste this code in your `~/.bashrc` file to have the same than me.
 
 ```
-########################################
-#               GIT                    #
-########################################
+RED="\[\033[0;31m\]"
+YELLOW="\[\033[1;33m\]"
+GREEN="\[\033[0;32m\]"
+BLUE="\[\033[1;34m\]"
+LIGHT_RED="\[\033[1;31m\]"
+LIGHT_GREEN="\[\033[1;32m\]"
+LIGHT_BLUE="\[\033[1;36m\]"
+WHITE="\[\033[1;37m\]"
+LIGHT_GRAY="\[\033[0;37m\]"
+COLOR_NONE="\[\e[0m\]"
 
 function parse_git_branch {
   git rev-parse --git-dir &> /dev/null
   git_status="$(LANG=en_GB git status 2> /dev/null)"
   branch_pattern="^On branch ([^${IFS}]*)"
-  remote_pattern=" Your branch is (.*) of"
-  diverge_pattern=" Your branch and (.*) have diverged"
-  untrack_pattern="Untracked files"
-  notstaged_pattern="Changes not staged for commit"
-  uptodate_pattern="is up to date with"
 
-  if [[ ! ${git_status} =~ ${uptodate_pattern} ]]; then
-    state="${RED}🗘"
+  if [[ ! ${git_status} =~ ${branch_pattern} ]]; then
+    return
   fi
-  if [[ ${git_status} =~ ${diverge_pattern} ]]; then
-    remote="${LIGHT_BLUE}⧖"${BLUE}::
-  elif [[ ${git_status} =~ ${remote_pattern} ]]; then
-    if [[ ${BASH_REMATCH[1]} == "ahead" ]]; then
-      remote="${LIGHT_BLUE}△"${BLUE}::
-    else
-      remote="${LIGHT_BLUE}▽"${BLUE}::
+  branch=${LIGHT_BLUE}${BASH_REMATCH[1]}
+  sha1=${BLUE}::${LIGHT_BLUE}$(git rev-parse --short HEAD)
+
+  uptodate_pattern="is up to date with"
+  ahead_pattern="Your branch is ahead .* by ([[:digit:]]+) commit"
+  behind_pattern="Your branch is behind .* by ([[:digit:]]+) commit"
+  untrack_pattern="Untracked files"
+  staged_pattern="Changes to be committed"
+  notstaged_pattern="Changes not staged for commit"
+  conflict_pattern="Unmerged paths"
+
+  # Repository clean
+  if [[ ${git_status} =~ ${uptodate_pattern} ]]; then
+    state="${GREEN}🗸 "
+  else
+    # ahead of remote by n commits
+    if [[ ${git_status} =~ ${ahead_pattern} ]]; then
+      state="${state}${GREEN}▲${BASH_REMATCH[1]} "
+    fi
+    # behind remote by n commits
+    if [[ ${git_status} =~ ${behind_pattern} ]]; then
+      state="${state}${RED}▼${BASH_REMATCH[1]} "
     fi
   fi
+
+  # untracked files
   if [[ ${git_status} =~ ${untrack_pattern} ]]; then
-    dirty="${RED}⚡"
-  elif [[ ${git_status} =~ ${notstaged_pattern} ]]; then
-    dirty="${RED}⚡"
+    remote="${LIGHT_BLUE}…"$(git ls-files --others --exclude-standard | wc -l)
   fi
-  if [ "${state}${dirty}" == "" ]; then
-    ok="${GREEN}✅"
+  # staged files
+  if [[ ${git_status} =~ ${staged_pattern} ]]; then
+    remote="${remote}${GREEN}●"$(git diff --name-only --cached | wc -l)
   fi
-  if [[ ${git_status} =~ ${branch_pattern} ]]; then
-    branch=${LIGHT_BLUE}${BASH_REMATCH[1]}${BLUE}::
-    sha1=${LIGHT_BLUE}$(git rev-parse --short HEAD)${BLUE}::
-    echo "${BLUE}(${state}${branch}${sha1}${remote}${dirty}${ok}${BLUE})"
+  # Files with merge conflicts
+  if [[ ${git_status} =~ ${conflict_pattern} ]]; then
+    remote="${remote}${RED}✖"$(git diff --name-only --diff-filter=U --relative | wc -l)
   fi
+
+  if [ "${remote}" != "" ]; then
+    remote="(${BLUE}${remote}${BLUE})"
+  fi
+
+  echo "${BLUE}(${state}${branch}${sha1}${BLUE})${remote}"
 }
 
 ########################################
@@ -84,3 +107,15 @@ function prompt_command {
 
 PROMPT_COMMAND=prompt_command
 ```
+
+## Git status
+
+Local status symbols:
+- ✔ repository clean
+- ●n there are n staged files
+- ✖n there are n files with merge conflicts
+- …n there are n untracked files
+
+Branch Tracking Symbols;
+- ▲n ahead of remote by n commits
+- ▼n behind remote by n commits
