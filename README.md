@@ -41,25 +41,29 @@ function parse_git_branch {
   else
     # ahead of remote by n commits
     if [[ ${git_status} =~ ${ahead_pattern} ]]; then
-      state="${state}${GREEN}▲${BASH_REMATCH[1]} "
+      state="${state}${YELLOW}▲ ${BASH_REMATCH[1]} "
     fi
     # behind remote by n commits
     if [[ ${git_status} =~ ${behind_pattern} ]]; then
-      state="${state}${RED}▼${BASH_REMATCH[1]} "
+      state="${state}${RED}▼ ${BASH_REMATCH[1]} "
     fi
   fi
 
-  # untracked files
+  # Untracked files
   if [[ ${git_status} =~ ${untrack_pattern} ]]; then
     remote="${LIGHT_BLUE}…"$(git ls-files --others --exclude-standard | wc -l)
   fi
-  # staged files
+  # Staged files
   if [[ ${git_status} =~ ${staged_pattern} ]]; then
-    remote="${remote}${GREEN}●"$(git diff --name-only --cached | wc -l)
+    remote="${remote}${GREEN}✚ "$(git diff --name-only --cached | wc -l)
   fi
   # Files with merge conflicts
   if [[ ${git_status} =~ ${conflict_pattern} ]]; then
-    remote="${remote}${RED}✖"$(git diff --name-only --diff-filter=U --relative | wc -l)
+    remote="${remote}${RED}✖ "$(git diff --name-only --diff-filter=U --relative | wc -l)
+  fi
+  # Modified files
+  if [[ ${git_status} =~ ${notstaged_pattern} ]]; then
+    remote="${remote}${YELLOW}● "$(git diff --name-status | wc -l)
   fi
 
   if [ "${remote}" != "" ]; then
