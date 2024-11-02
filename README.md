@@ -1,4 +1,6 @@
-# An owl in your bash
+# My profile
+
+## An owl in your bash
 
 ![alt tag](https://github.com/Lecrapouille/MyBashPrompt/blob/master/owl.png)
 
@@ -123,3 +125,25 @@ Local status symbols:
 Branch Tracking Symbols;
 - ▲n ahead of remote by n commits
 - ▼n behind remote by n commits
+
+
+## Open terminal in PCManFM (LXDE File Manager)
+
+Create `~/.local/share/file-manager/actions/terminal.desktop` with the following content:
+
+```
+[Desktop Entry]
+Type=Action
+Tooltip=Open Terminal
+Name=Open Terminal
+Profiles=profile-one;
+Icon=utilities-terminal
+
+
+[X-Action-Profile profile-one]
+MimeTypes=inode/directory;
+Exec=tilix -w %f
+Name=Default profile
+```
+
+I'm using [Tilix](https://github.com/gnunn1/tilix) as terminal.
