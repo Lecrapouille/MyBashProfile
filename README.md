@@ -81,10 +81,10 @@ function parse_git_branch {
 
 function twtty {
     PS1="
-${BLUE} ^_^
-(${LIGHT_BLUE}*.*${BLUE})
-(   )
-${LIGHT_BLUE} ~ ~ ${BLUE}-${LIGHT_BLUE}-\${fill}${BLUE}-(${LIGHT_BLUE}\${newPWD}${BLUE})-${LIGHT_BLUE}-
+${BLUE} ,___,
+ (${LIGHT_BLUE}o${YELLOW},${LIGHT_BLUE}O${BLUE})
+/(   )
+${BLUE}-${YELLOW} ~ ~ ${BLUE}-\${fill}${BLUE}-(${LIGHT_BLUE}\${newPWD}${BLUE})-
 ${BLUE}(${LIGHT_BLUE}\$(date +%Hh%M)${BLUE}::${LIGHT_BLUE}\$(date \"+%a %d %b %y\")${BLUE})$(parse_git_branch)
 ${COLOR_NONE} "
 
