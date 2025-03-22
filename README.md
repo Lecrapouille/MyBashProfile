@@ -4,9 +4,9 @@
 
 ![alt tag](https://github.com/Lecrapouille/MyBashPrompt/blob/master/owl.png)
 
-Here is the bash code for my console prompt. Copy/paste this code in your `~/.bashrc` file to have the same than me.
+Here is the bash code for my console prompt. Copy/paste this code into your `~/.bashrc` file to have the same prompt as me.
 
-```
+```bash
 RED="\[\033[0;31m\]"
 YELLOW="\[\033[1;33m\]"
 GREEN="\[\033[0;32m\]"
@@ -43,11 +43,11 @@ function parse_git_branch {
   else
     # ahead of remote by n commits
     if [[ ${git_status} =~ ${ahead_pattern} ]]; then
-      state="${state}${YELLOW}▲ ${BASH_REMATCH[1]} "
+      state="${state}${YELLOW}▲${BASH_REMATCH[1]} "
     fi
     # behind remote by n commits
     if [[ ${git_status} =~ ${behind_pattern} ]]; then
-      state="${state}${RED}▼ ${BASH_REMATCH[1]} "
+      state="${state}${RED}▼${BASH_REMATCH[1]} "
     fi
   fi
 
@@ -57,15 +57,15 @@ function parse_git_branch {
   fi
   # Staged files
   if [[ ${git_status} =~ ${staged_pattern} ]]; then
-    remote="${remote}${GREEN}✚ "$(git diff --name-only --cached | wc -l)
+    remote="${remote}${GREEN}✚"$(git diff --name-only --cached | wc -l)
   fi
   # Files with merge conflicts
   if [[ ${git_status} =~ ${conflict_pattern} ]]; then
-    remote="${remote}${RED}✖ "$(git diff --name-only --diff-filter=U --relative | wc -l)
+    remote="${remote}${RED}✖"$(git diff --name-only --diff-filter=U --relative | wc -l)
   fi
   # Modified files
   if [[ ${git_status} =~ ${notstaged_pattern} ]]; then
-    remote="${remote}${YELLOW}● "$(git diff --name-status | wc -l)
+    remote="${remote}${YELLOW}●"$(git diff --name-status | wc -l)
   fi
 
   if [ "${remote}" != "" ]; then
@@ -117,21 +117,23 @@ PROMPT_COMMAND=prompt_command
 ## Git status
 
 Local status symbols:
-- ✔ repository clean
-- ●n there are n staged files
-- ✖n there are n files with merge conflicts
-- …n there are n untracked files
 
-Branch Tracking Symbols;
-- ▲n ahead of remote by n commits
-- ▼n behind remote by n commits
+- ●n there are n modified files.
+- ✚n there are n staged files.
+- ✖n there are n files with merge conflicts.
+- …n there are n untracked files.
 
+Branch Tracking Symbols:
+
+- ✔ the repository is up to date.
+- ▲n ahead of remote by n commits.
+- ▼n behind remote by n commits.
 
 ## Open terminal in PCManFM (LXDE File Manager)
 
 Create `~/.local/share/file-manager/actions/terminal.desktop` with the following content:
 
-```
+```desktop
 [Desktop Entry]
 Type=Action
 Tooltip=Open Terminal
@@ -146,4 +148,4 @@ Exec=tilix -w %f
 Name=Default profile
 ```
 
-I'm using [Tilix](https://github.com/gnunn1/tilix) as terminal.
+I'm using [Tilix](https://github.com/gnunn1/tilix) as my terminal.
