@@ -36,7 +36,7 @@ function parse_git_branch {
 
   # Repository clean
   if [[ ${git_status} =~ ${uptodate_pattern} ]]; then
-    state="${GREEN}🗸 "
+    state="${GREEN}✔ "
   else
     # ahead of remote by n commits
     if [[ ${git_status} =~ ${ahead_pattern} ]]; then
