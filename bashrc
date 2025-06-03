@@ -13,12 +13,18 @@ function parse_git_branch {
   git rev-parse --git-dir &> /dev/null
   git_status="$(LANG=en_GB git status 2> /dev/null)"
   branch_pattern="^On branch ([^${IFS}]*)"
+  detached_pattern="HEAD detached"
 
-  if [[ ! ${git_status} =~ ${branch_pattern} ]]; then
+  # Check if we're in detached HEAD state
+  if [[ ${git_status} =~ ${detached_pattern} ]]; then
+    branch=${RED}detached
+    sha1=${BLUE}::${LIGHT_BLUE}$(git rev-parse --short HEAD)
+  elif [[ ${git_status} =~ ${branch_pattern} ]]; then
+    branch=${LIGHT_BLUE}${BASH_REMATCH[1]}
+    sha1=${BLUE}::${LIGHT_BLUE}$(git rev-parse --short HEAD)
+  else
     return
   fi
-  branch=${LIGHT_BLUE}${BASH_REMATCH[1]}
-  sha1=${BLUE}::${LIGHT_BLUE}$(git rev-parse --short HEAD)
 
   uptodate_pattern="is up to date with"
   ahead_pattern="Your branch is ahead .* by ([[:digit:]]+) commit"
